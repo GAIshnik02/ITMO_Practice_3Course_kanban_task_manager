@@ -1,4 +1,4 @@
-package com.practiceproject.itmopracticeproject;
+package com.practiceproject.itmopracticeproject.auth;
 
 
 import org.slf4j.Logger;

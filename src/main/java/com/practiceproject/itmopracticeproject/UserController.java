@@ -1,12 +1,11 @@
 package com.practiceproject.itmopracticeproject;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,27 +21,35 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        return userService.getUserByLogin(userDetails.getUsername());
+    @PostMapping("/create")
+    public ResponseEntity<UserDto> createUser (
+           @RequestBody @Valid UserDto request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(
-            @AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<UserDto> getUserById(
             @PathVariable("id") Long userId) {
-        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {}
-        // TODO: Сделать тут логику что может только админ запрашивать
-        // TODO: Сделать в бдшке login unique
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body( userService.getUserById(userId));
     }
 
-    @PutMapping("/me")
-    public ResponseEntity<UserResponse> updateCurrentUser(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody UpdateUserRequest request) {
-        return userService.updateUser(userDetails.getUsername(), request);
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> deleteUserById(
+            @PathVariable("id") Long userId
+    ) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/update")
+    public ResponseEntity<UserDto> updateUserById(
+            @PathVariable("id")  Long userId,
+            @RequestBody @Valid UserDto request
+    ) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUser(userId, request));
+    }
+
+
 
     //TODO: Добавить поиск, и изменение юзера админом
 }

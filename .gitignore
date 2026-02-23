@@ -43,3 +43,5 @@ gradlew.bat
 
 /src/main/resources/application.properties
 
+build.gradle
+/gradle/wrapper/gradle-wrapper.properties

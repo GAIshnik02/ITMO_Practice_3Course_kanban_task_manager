@@ -13,6 +13,7 @@ public class UserMapper {
                 userEntity.getFirst_name(),
                 userEntity.getSurname(),
                 userEntity.getPatronymic(),
+                userEntity.getRole(),
                 userEntity.getCreated_at(),
                 userEntity.getUpdated_at()
         );

@@ -27,52 +27,36 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/me")
     public ResponseEntity<?> getUserById(
-            @PathVariable("id") Long userId,
             @CurrentUser UserEntity currentUser) {
-        if (!userId.equals(currentUser.getId())) {
-            throw new SecurityException("You can only view your own profile");
-        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(currentUser.getId()));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/me")
     public ResponseEntity<?> deleteUserById(
-            @PathVariable("id") Long userId,
             @CurrentUser UserEntity currentUser
     ) {
-        if (!userId.equals(currentUser.getId())) {
-            throw new SecurityException("You can only delete your own profile");
-        }
-        userService.deleteUserById(userId);
+        userService.deleteUserById(currentUser.getId());
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/me")
     public ResponseEntity<?> updateUserById(
-            @PathVariable("id")  Long userId,
             @Valid @RequestBody UserUpdateRequestDto request,
             @CurrentUser UserEntity currentUser
     ) {
-        if (!userId.equals(currentUser.getId())) {
-            throw new SecurityException("You can only update your own profile");
-        }
-        UserResponseDto updated = userService.updateUser(userId, request);
+        UserResponseDto updated = userService.updateUser(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updated);
     }
 
-    @PostMapping("/{id}/change-password")
+    @PostMapping("/me/change-password")
     public ResponseEntity<?> changePassword(
-            @PathVariable("id") Long userId,
             @RequestBody UserChangePasswordRequest request,
             @CurrentUser UserEntity currentUser
     ) {
-        if (!userId.equals(currentUser.getId())) {
-            throw new SecurityException("You can only update your own profile");
-        }
-        userService.changePassword(userId, request);
+        userService.changePassword(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }

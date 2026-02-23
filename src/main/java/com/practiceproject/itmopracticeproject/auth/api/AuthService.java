@@ -42,7 +42,7 @@ public class AuthService {
         userToRegister.setLogin(request.login());
         userToRegister.setPass_hash(passwordEncoder.encode(request.password()));
         userToRegister.setRole(GlobalRole.USER);
-        userToRegister.setFirst_name(request.first_Name());
+        userToRegister.setFirst_name(request.first_name());
         userToRegister.setSurname(request.surname());
         userToRegister.setPatronymic(request.patronymic());
         UserEntity createdUser = userRepository.save(userToRegister);

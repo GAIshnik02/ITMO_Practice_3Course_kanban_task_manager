@@ -4,7 +4,6 @@ import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntit
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.task.db.TaskEntity;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -78,7 +77,6 @@ public class UserEntity {
         }
         assignedTasks.clear();
     }
-
 
     public UserEntity(Long id,
                       String login,

@@ -7,7 +7,6 @@ import com.practiceproject.itmopracticeproject.task.dto.TaskResponseDto;
 import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import jakarta.validation.Valid;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ public class TaskController {
     public ResponseEntity<?> getTasks(
             @PathVariable("board_id") Long board_id,
             @CurrentUser UserEntity user
-    ){
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTasks(board_id, user));
     }
 

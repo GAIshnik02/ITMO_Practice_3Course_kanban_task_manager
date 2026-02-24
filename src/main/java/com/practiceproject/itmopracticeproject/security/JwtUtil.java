@@ -33,7 +33,10 @@ public class JwtUtil {
         return createToken(claims, user.getLogin());
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    private String createToken(
+            Map<String, Object> claims,
+            String subject
+    ) {
         return Jwts.builder()
                    .setClaims(claims)
                    .setSubject(subject)
@@ -43,7 +46,10 @@ public class JwtUtil {
                    .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(
+            String token,
+            UserDetails userDetails
+    ) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

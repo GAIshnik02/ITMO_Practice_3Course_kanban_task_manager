@@ -4,5 +4,4 @@ public record UserUpdateRequestDto(
         String first_name,
         String surname,
         String patronymic
-) {
-}
+) {}

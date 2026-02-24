@@ -6,7 +6,6 @@ public record BoardResponseDto(
         Long id,
         String name,
         String description,
-        //TODO: Реализовать смену владельца доски
         Long owner_id,
         LocalDateTime created_at,
         LocalDateTime updated_at

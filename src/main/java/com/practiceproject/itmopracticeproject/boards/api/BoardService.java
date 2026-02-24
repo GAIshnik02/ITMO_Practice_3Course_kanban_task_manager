@@ -16,7 +16,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 
-
 @Controller
 @Transactional
 public class BoardService {
@@ -26,8 +25,12 @@ public class BoardService {
     private final BoardMemberRepository boardMemberRepository;
     private final BoardMapper mapper;
 
-
-    public BoardService(BoardRepository repository, UserRepository userRepository, BoardMapper mapper, BoardMemberRepository boardMemberRepository) {
+    public BoardService(
+            BoardRepository repository,
+            UserRepository userRepository,
+            BoardMapper mapper,
+            BoardMemberRepository boardMemberRepository
+    ) {
         this.boardRepository = repository;
         this.userRepository = userRepository;
         this.mapper = mapper;
@@ -38,7 +41,8 @@ public class BoardService {
             BoardRequestDto request,
             Long ownerId
     ) {
-        UserEntity owner = userRepository.findById(ownerId)
+        UserEntity owner = userRepository
+                .findById(ownerId)
                 .orElseThrow(() -> new EntityNotFoundException("User with id: " + ownerId + " not found"
                 ));
 
@@ -63,7 +67,10 @@ public class BoardService {
         return mapper.toDto(savedBoard);
     }
 
-    public BoardResponseDto getBoardById(Long boardId, UserEntity user) {
+    public BoardResponseDto getBoardById(
+            Long boardId,
+            UserEntity user
+    ) {
         if (user.getRole().equals(GlobalRole.ADMIN)) {
             BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
                     EntityNotFoundException("Board with id: " + boardId + " not found"));
@@ -74,15 +81,18 @@ public class BoardService {
         BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
                 EntityNotFoundException("Board with id: " + boardId + " not found"));
 
-
         boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(
-                    () -> new SecurityException("You don't have permission to access this board!"
+                () -> new SecurityException("You don't have permission to access this board!"
                 ));
 
         return mapper.toDto(entity);
     }
 
-    public BoardResponseDto updateBoard(Long boardId , BoardRequestDto request,  UserEntity user) {
+    public BoardResponseDto updateBoard(
+            Long boardId,
+            BoardRequestDto request,
+            UserEntity user
+    ) {
         if (user.getRole().equals(GlobalRole.ADMIN)) {
             BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
                     EntityNotFoundException("Board with id: " + boardId + " not found"));
@@ -90,7 +100,8 @@ public class BoardService {
             return mapper.toDto(entity);
         }
 
-        boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("Board with id: " + boardId + " not found"));
+        boardRepository.findById(boardId)
+                       .orElseThrow(() -> new EntityNotFoundException("Board with id: " + boardId + " not found"));
 
         UserEntity owner = userRepository.findById(user.getId()).orElseThrow(
                 () -> new EntityNotFoundException("User with id: " + user.getId() + " not found"));
@@ -109,7 +120,10 @@ public class BoardService {
         return mapper.toDto(savedBoard);
     }
 
-    public void deleteBoardById(Long boardId, UserEntity user) {
+    public void deleteBoardById(
+            Long boardId,
+            UserEntity user
+    ) {
         if (user.getRole().equals(GlobalRole.ADMIN)) {
             BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
                     EntityNotFoundException("Board with id: " + boardId + " not found"));

@@ -8,7 +8,6 @@ import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
 import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import jakarta.validation.Valid;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +99,6 @@ public class AdminTaskController {
         TaskResponseDto updated = taskService.updateAssignees(boardId, taskId, assigneeIds, user);
         return ResponseEntity.ok(updated);
     }
-
 
     private void checkRole(GlobalRole role) {
         if (role != GlobalRole.ADMIN) {

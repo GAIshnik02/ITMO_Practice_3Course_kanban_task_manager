@@ -27,16 +27,18 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception {
-
+    public Object resolveArgument(
+            MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory
+    ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
-            throw new IllegalStateException("No userId found in request attributes. Make sure JwtAuthenticationFilter is executed.");
+            throw new IllegalStateException("No userId found in request attributes. " +
+                    "Make sure JwtAuthenticationFilter is executed.");
         }
 
         return userRepository.findById(userId)

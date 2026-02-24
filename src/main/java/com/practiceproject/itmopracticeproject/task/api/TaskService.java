@@ -66,7 +66,6 @@ public class TaskService {
         return mapper.toDto(taskEntity);
     }
 
-
     public TaskResponseDto createTask(
             Long boardId,
             TaskCreateRequestDto request,
@@ -121,7 +120,8 @@ public class TaskService {
         task.setStatus(dto.status());
 
         if (dto.assigneeIds() != null) {
-            Set<UserEntity> assignees = dto.assigneeIds().stream()
+            Set<UserEntity> assignees = dto.assigneeIds()
+                                           .stream()
                                            .map(id -> userRepository.findById(id).orElseThrow(
                                                    () -> new EntityNotFoundException("User " + id + " not found")
                                            ))
@@ -151,10 +151,11 @@ public class TaskService {
 
         validateUpdatePermissions(updatingUserMemberEntity, user);
 
-        TaskEntity task = taskRepository.findById(taskId)
-                                        .orElseThrow(
-                                                () -> new EntityNotFoundException("Task with id " + taskId + " not found")
-                                        );
+        TaskEntity task = taskRepository
+                .findById(taskId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Task with id " + taskId + " not found")
+                );
 
         if (!task.getBoard().getId().equals(boardId)) {
             throw new IllegalArgumentException("Task does not belong to this board");
@@ -170,17 +171,19 @@ public class TaskService {
 
         validateUpdatePermissions(updatingUserMemberEntity, user);
 
-        TaskEntity task = taskRepository.findByIdWithAssignees(taskId)
-                                        .orElseThrow(
-                                                () -> new EntityNotFoundException("Task with id " + taskId + " not found")
-                                        );
+        TaskEntity task = taskRepository
+                .findByIdWithAssignees(taskId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Task with id " + taskId + " not found")
+                );
 
-        Set<UserEntity> assignees = assigneeIds.stream()
-                                               .map(id -> userRepository.findById(id)
-                                                                        .orElseThrow(
-                                                                                () -> new EntityNotFoundException("User " + id + " not found")
-                                                                        ))
-                                               .collect(Collectors.toSet());
+        Set<UserEntity> assignees = assigneeIds
+                .stream()
+                .map(id -> userRepository.findById(id)
+                                         .orElseThrow(
+                                                 () -> new EntityNotFoundException("User " + id + " not found")
+                                         ))
+                .collect(Collectors.toSet());
 
         task.setAssignees(assignees);
         return mapper.toDto(taskRepository.save(task));
@@ -256,5 +259,4 @@ public class TaskService {
             throw new SecurityException("You cannot delete this task!");
         }
     }
-
 }

@@ -27,14 +27,23 @@ public class BoardMemberService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    public BoardMemberService(BoardMemberRepository boardMemberRepository, BoardMemberMapper mapper, UserRepository userRepository, BoardRepository boardRepository) {
+    public BoardMemberService(
+            BoardMemberRepository boardMemberRepository,
+            BoardMemberMapper mapper,
+            UserRepository userRepository,
+            BoardRepository boardRepository
+    ) {
         this.boardMemberRepository = boardMemberRepository;
         this.mapper = mapper;
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
     }
 
-    public BoardMemberResponseDto addMember(Long boardId, CreateBoardMemberRequest request, UserEntity user) {
+    public BoardMemberResponseDto addMember(
+            Long boardId,
+            CreateBoardMemberRequest request,
+            UserEntity user
+    ) {
         // If adding user is in the board
         BoardMemberEntity boardMemberEntity = checkBoardAccess(boardId, user);
 
@@ -68,8 +77,10 @@ public class BoardMemberService {
         return mapper.toDto(savedEntity);
     }
 
-    public List<BoardMemberResponseDto> getMembers(Long boardId, UserEntity user) {
-
+    public List<BoardMemberResponseDto> getMembers(
+            Long boardId,
+            UserEntity user
+    ) {
         checkBoardAccess(boardId, user);
 
         boardRepository.findById(boardId).orElseThrow(
@@ -77,7 +88,7 @@ public class BoardMemberService {
         );
 
         List<BoardMemberEntity> entities = boardMemberRepository.findAllByBoardId(
-            boardId
+                boardId
         );
 
         return entities.stream().map(mapper::toDto).toList();
@@ -88,7 +99,6 @@ public class BoardMemberService {
             CreateBoardMemberRequest request,
             UserEntity currentUser
     ) {
-
         BoardMemberEntity currentUserMember = checkBoardAccess(boardId, currentUser);
 
         validateUpdatePermissions(currentUserMember, request, currentUser);
@@ -116,8 +126,11 @@ public class BoardMemberService {
     }
 
 
-    public void deleteMemberFromBoardById(Long boardId, Long userId, UserEntity currentUser) {
-
+    public void deleteMemberFromBoardById(
+            Long boardId,
+            Long userId,
+            UserEntity currentUser
+    ) {
         BoardMemberEntity currentUserEntity = checkBoardAccess(boardId, currentUser);
 
         userRepository.findById(userId).orElseThrow(
@@ -128,8 +141,9 @@ public class BoardMemberService {
         );
 
         BoardMemberEntity entityToDelete = boardMemberRepository
-                .findByBoardIdAndUserId(boardId, userId).orElseThrow(
-                        () -> new EntityNotFoundException("Member not found for board: " + boardId + " and user: " + userId
+                .findByBoardIdAndUserId(boardId, userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Member not found for board: " + boardId + " and user: " + userId
                         ));
 
         validateDeletePermissions(currentUserEntity, currentUser, entityToDelete);

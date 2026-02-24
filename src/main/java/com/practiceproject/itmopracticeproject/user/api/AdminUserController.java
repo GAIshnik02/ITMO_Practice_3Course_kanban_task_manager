@@ -32,7 +32,8 @@ public class AdminUserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(
             @PathVariable("id") Long userId,
-            @CurrentUser UserEntity currentUser) {
+            @CurrentUser UserEntity currentUser
+    ) {
         if (currentUser.getRole() != GlobalRole.ADMIN) {
             throw new SecurityException("Access denied");
         }

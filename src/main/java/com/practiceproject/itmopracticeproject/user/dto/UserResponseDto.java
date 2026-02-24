@@ -1,6 +1,5 @@
 package com.practiceproject.itmopracticeproject.user.dto;
 
-
 import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 
 import java.time.LocalDateTime;
@@ -14,6 +13,4 @@ public record UserResponseDto(
     GlobalRole role,
     LocalDateTime created_at,
     LocalDateTime updated_at
-) {
-
-}
+) {}

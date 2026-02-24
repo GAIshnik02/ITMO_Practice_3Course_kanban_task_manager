@@ -44,19 +44,4 @@ public class TaskMapper {
         entity.setAssignees(assignees);
         return entity;
     }
-
-    public void updateEntity(
-            TaskEntity entity,
-            TaskUpdateRequestDto dto,
-            Set<UserEntity> assignees
-    ) {
-        entity.setTitle(dto.title());
-        entity.setDescription(dto.description());
-        entity.setStatus(dto.status());
-        entity.setPriority(dto.priority());
-        entity.setPosition(dto.position());
-        if (assignees != null) {
-            entity.setAssignees(assignees);
-        }
-    }
 }

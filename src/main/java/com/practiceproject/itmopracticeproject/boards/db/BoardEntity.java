@@ -21,7 +21,7 @@ public class BoardEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name" ,nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
@@ -31,7 +31,7 @@ public class BoardEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
-    @OneToMany(mappedBy = "board",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskEntity> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -54,14 +54,16 @@ public class BoardEntity {
         this.updated_at = LocalDateTime.now();
     }
 
-    public BoardEntity() {}
+    public BoardEntity() {
+    }
 
-    public BoardEntity(Long id,
-                       String name,
-                       String description,
-                       UserEntity owner,
-                       LocalDateTime created_at,
-                       LocalDateTime updated_at
+    public BoardEntity(
+            Long id,
+            String name,
+            String description,
+            UserEntity owner,
+            LocalDateTime created_at,
+            LocalDateTime updated_at
     ) {
         this.id = id;
         this.name = name;

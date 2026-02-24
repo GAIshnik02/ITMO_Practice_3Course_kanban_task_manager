@@ -28,8 +28,8 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getUserById(
-            @CurrentUser UserEntity currentUser) {
-
+            @CurrentUser UserEntity currentUser
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(currentUser.getId()));
     }
 

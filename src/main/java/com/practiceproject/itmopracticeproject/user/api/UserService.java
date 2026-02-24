@@ -16,9 +16,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       UserMapper userMapper,
-                       PasswordEncoder passwordEncoder
+    public UserService(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -28,7 +29,7 @@ public class UserService {
     public UserResponseDto getUserById(Long userId) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() ->
                 new EntityNotFoundException("User with id: " + userId + " not found")
-                );
+        );
         return userMapper.toDto(userEntity);
     }
 

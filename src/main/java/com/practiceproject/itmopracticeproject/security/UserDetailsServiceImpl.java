@@ -33,8 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(
                 user.getLogin(),
                 user.getPass_hash(),
-                grantedAuthorities);
+                grantedAuthorities
+        );
     }
-
-
 }

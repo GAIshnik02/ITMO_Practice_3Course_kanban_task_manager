@@ -17,7 +17,10 @@ public class BoardMemberId implements Serializable {
 
     public BoardMemberId() {}
 
-    public BoardMemberId(Long boardId, Long userId) {
+    public BoardMemberId(
+            Long boardId,
+            Long userId
+    ) {
         this.boardId = boardId;
         this.userId = userId;
     }

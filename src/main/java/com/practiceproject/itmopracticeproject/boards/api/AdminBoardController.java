@@ -22,7 +22,8 @@ public class AdminBoardController {
     @PostMapping("/create")
     public ResponseEntity<?> createBoard(
             @Valid @RequestBody BoardRequestDto request,
-            @CurrentUser UserEntity user) {
+            @CurrentUser UserEntity user
+    ) {
         if (user.getRole() != GlobalRole.ADMIN) {
             throw new SecurityException("Access denied");
         }
@@ -34,7 +35,8 @@ public class AdminBoardController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getBoardById(
             @PathVariable("id") Long boardId,
-            @CurrentUser UserEntity user) {
+            @CurrentUser UserEntity user
+    ) {
         if (user.getRole() != GlobalRole.ADMIN) {
             throw new SecurityException("Access denied");
         }
@@ -66,5 +68,4 @@ public class AdminBoardController {
         service.deleteBoardById(id, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 }

@@ -104,10 +104,6 @@ public class BoardMemberEntity {
         return joined_at;
     }
 
-    public void setJoined_at(LocalDateTime joined_at) {
-        this.joined_at = joined_at;
-    }
-
     public LocalDateTime getLeft_at() {
         return left_at;
     }

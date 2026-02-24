@@ -1,6 +1,5 @@
 package com.practiceproject.itmopracticeproject.board_members.api;
 
-import com.practiceproject.itmopracticeproject.board_members.dto.BoardMemberResponseDto;
 import com.practiceproject.itmopracticeproject.board_members.dto.CreateBoardMemberRequest;
 import com.practiceproject.itmopracticeproject.security.CurrentUser;
 import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
@@ -9,8 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/boards/")

@@ -37,10 +37,14 @@ public class BoardMemberMapper {
         return entity;
     }
 
-    public void updateRole(BoardMemberEntity entity, Role role) {
+    public void updateRole(
+            BoardMemberEntity entity,
+            Role role
+    ) {
         entity.setRole(role);
     }
 
+    @Deprecated
     public void markAsLeft(BoardMemberEntity entity) {
         entity.setLeft_at(LocalDateTime.now());
     }

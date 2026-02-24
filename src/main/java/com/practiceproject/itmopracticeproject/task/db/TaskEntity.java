@@ -163,8 +163,6 @@ public class TaskEntity {
         this.creator = creator;
     }
 
-
-
     public LocalDateTime getCreated_at() {
         return created_at;
     }

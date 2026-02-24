@@ -28,6 +28,7 @@ public class AdminBoardMemberController {
             @PathVariable("board_id") Long board_id,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         if (!user.getRole().equals(GlobalRole.ADMIN)) {
             throw new SecurityException("Access denied");
         }
@@ -40,6 +41,7 @@ public class AdminBoardMemberController {
             @PathVariable("board_id") Long board_id,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         if (!user.getRole().equals(GlobalRole.ADMIN)) {
             throw new SecurityException("Access denied");
         }
@@ -53,6 +55,7 @@ public class AdminBoardMemberController {
             @Valid @RequestBody CreateBoardMemberRequest request,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         if (!user.getRole().equals(GlobalRole.ADMIN)) {
             throw new SecurityException("Access denied");
         }
@@ -66,11 +69,18 @@ public class AdminBoardMemberController {
             @PathVariable("user_id") Long user_id,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         if (!user.getRole().equals(GlobalRole.ADMIN)) {
             throw new SecurityException("Access denied");
         }
 
         service.deleteMemberFromBoardById(board_id, user_id, user);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    private void checkRole(GlobalRole role) {
+        if (role != GlobalRole.ADMIN) {
+            throw new SecurityException("Access denied");
+        }
     }
 }

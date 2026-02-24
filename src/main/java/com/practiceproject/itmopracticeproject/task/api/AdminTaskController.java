@@ -5,6 +5,7 @@ import com.practiceproject.itmopracticeproject.task.dto.TaskStatus;
 import com.practiceproject.itmopracticeproject.task.dto.TaskCreateRequestDto;
 import com.practiceproject.itmopracticeproject.task.dto.TaskResponseDto;
 import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
+import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import jakarta.validation.Valid;
 import org.apache.catalina.User;
@@ -29,6 +30,7 @@ public class AdminTaskController {
             @PathVariable("board_id") Long board_id,
             @CurrentUser UserEntity user
     ){
+        checkRole(user.getRole());
         return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTasks(board_id, user));
     }
 
@@ -38,6 +40,7 @@ public class AdminTaskController {
             @PathVariable("task_id") Long task_id,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         return ResponseEntity.status(HttpStatus.OK).body(taskService.getTask(board_id, task_id, user));
     }
 
@@ -48,6 +51,7 @@ public class AdminTaskController {
             @CurrentUser UserEntity user
 
     ) {
+        checkRole(user.getRole());
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(boardId, dto, user));
     }
 
@@ -58,6 +62,7 @@ public class AdminTaskController {
             @RequestBody @Valid TaskUpdateRequestDto dto,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(taskService.updateTask(boardId, taskId, dto, user));
     }
 
@@ -67,6 +72,7 @@ public class AdminTaskController {
             @PathVariable("taskId") Long taskId,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         taskService.deleteTask(boardId, taskId, user);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -78,18 +84,27 @@ public class AdminTaskController {
             @RequestParam TaskStatus status,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         TaskResponseDto updated = taskService.updateTaskStatus(boardId, taskId, status, user);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @PatchMapping("/{taskId}/assignees")
     public ResponseEntity<?> updateAssignees(
-            @PathVariable("boardId")  Long boardId,
+            @PathVariable("board_id")  Long boardId,
             @PathVariable("taskId") Long taskId,
             @RequestBody List<Long> assigneeIds,
             @CurrentUser UserEntity user
     ) {
+        checkRole(user.getRole());
         TaskResponseDto updated = taskService.updateAssignees(boardId, taskId, assigneeIds, user);
         return ResponseEntity.ok(updated);
+    }
+
+
+    private void checkRole(GlobalRole role) {
+        if (role != GlobalRole.ADMIN) {
+            throw new SecurityException("Access denied");
+        }
     }
 }

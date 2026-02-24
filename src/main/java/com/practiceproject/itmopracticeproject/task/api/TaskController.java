@@ -84,7 +84,7 @@ public class TaskController {
 
     @PatchMapping("/{taskId}/assignees")
     public ResponseEntity<?> updateAssignees(
-            @PathVariable("board_Id")  Long boardId,
+            @PathVariable("board_id")  Long boardId,
             @PathVariable("taskId") Long taskId,
             @RequestBody List<Long> assigneeIds,
             @CurrentUser UserEntity user

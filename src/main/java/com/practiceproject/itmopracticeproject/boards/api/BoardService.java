@@ -1,13 +1,14 @@
 package com.practiceproject.itmopracticeproject.boards.api;
 
-import com.practiceproject.itmopracticeproject.board_members.api.BoardMemberService;
-import com.practiceproject.itmopracticeproject.board_members.api.CreateBoardMemberRequest;
+import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntity;
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberRepository;
-import com.practiceproject.itmopracticeproject.board_members.domain.Role;
+import com.practiceproject.itmopracticeproject.board_members.dto.Role;
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.boards.db.BoardRepository;
-import com.practiceproject.itmopracticeproject.boards.domain.BoardDto;
-import com.practiceproject.itmopracticeproject.boards.domain.BoardMapper;
+import com.practiceproject.itmopracticeproject.boards.dto.BoardRequestDto;
+import com.practiceproject.itmopracticeproject.boards.dto.BoardMapper;
+import com.practiceproject.itmopracticeproject.boards.dto.BoardResponseDto;
+import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import com.practiceproject.itmopracticeproject.user.db.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,61 +22,105 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final BoardMemberService boardMemberService;
+    private final BoardMemberRepository boardMemberRepository;
     private final BoardMapper mapper;
 
 
-    public BoardService(BoardRepository repository, UserRepository userRepository, BoardMemberService boardMemberRepository, BoardMapper mapper, BoardMemberService boardMemberService) {
+    public BoardService(BoardRepository repository, UserRepository userRepository, BoardMapper mapper, BoardMemberRepository boardMemberRepository) {
         this.boardRepository = repository;
         this.userRepository = userRepository;
         this.mapper = mapper;
-        this.boardMemberService = boardMemberService;
+        this.boardMemberRepository = boardMemberRepository;
     }
 
-    public BoardDto createBoard(BoardDto boardDto) {
-        UserEntity owner = userRepository.findById(boardDto.owner_id())
-                .orElseThrow(() -> new EntityNotFoundException("User with id: " + boardDto.owner_id() + " not found"
+    public BoardResponseDto createBoard(
+            BoardRequestDto request,
+            Long ownerId
+    ) {
+        UserEntity owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id: " + ownerId + " not found"
                 ));
 
-        var boardToCreate = mapper.toBoardEntity(boardDto, owner);
-
-        // добавляем юзера в участники доски при создании
-        var requestToCreateMember = new CreateBoardMemberRequest(
-                boardDto.owner_id(),
-                Role.OWNER
-        );
-
+        var boardToCreate = new BoardEntity();
+        boardToCreate.setName(request.name());
+        boardToCreate.setDescription(request.description());
+        boardToCreate.setOwner(owner);
 
         var savedBoard = boardRepository.save(boardToCreate);
 
-        boardMemberService.addMember(savedBoard.getId(),  requestToCreateMember);
+        // добавляем юзера в участники доски при создании
+        var boardMemberEntity = new BoardMemberEntity();
+        boardMemberEntity.setBoard(savedBoard);
+        boardMemberEntity.setUser(owner);
+        boardMemberEntity.setRole(Role.OWNER);
 
-        return mapper.toBoardDto(savedBoard);
+        boardMemberRepository.save(boardMemberEntity);
+
+        return mapper.toDto(savedBoard);
     }
 
-    public BoardDto getBoardById(Long id) {
-        BoardEntity entity = boardRepository.findById(id).orElseThrow(() -> new
-                EntityNotFoundException("Board with id: " + id + " not found"));
+    public BoardResponseDto getBoardById(Long boardId, UserEntity user) {
+        if (user.getRole().equals(GlobalRole.ADMIN)) {
+            BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
+                    EntityNotFoundException("Board with id: " + boardId + " not found"));
 
-        return mapper.toBoardDto(entity);
+            return mapper.toDto(entity);
+        }
+
+        BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
+                EntityNotFoundException("Board with id: " + boardId + " not found"));
+
+
+        boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(
+                    () -> new SecurityException("You don't have permission to access this board!"
+                ));
+
+        return mapper.toDto(entity);
     }
 
-    public BoardDto updateBoard(Long id ,BoardDto boardDto) {
-        boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Board with id: " + id + " not found"));
+    public BoardResponseDto updateBoard(Long boardId , BoardRequestDto request,  UserEntity user) {
+        if (user.getRole().equals(GlobalRole.ADMIN)) {
+            BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
+                    EntityNotFoundException("Board with id: " + boardId + " not found"));
 
-        UserEntity owner = userRepository.findById(boardDto.owner_id()).orElseThrow(
-                () -> new EntityNotFoundException("User with id: " + boardDto.owner_id() + " not found"));
-        var boardToUpdate = mapper.toBoardEntity(boardDto, owner);
+            return mapper.toDto(entity);
+        }
+
+        boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("Board with id: " + boardId + " not found"));
+
+        UserEntity owner = userRepository.findById(user.getId()).orElseThrow(
+                () -> new EntityNotFoundException("User with id: " + user.getId() + " not found"));
+
+        boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(
+                () -> new SecurityException("You don't have permission to access this board!"
+                ));
+
+        var boardToUpdate = new BoardEntity();
+        boardToUpdate.setName(request.name());
+        boardToUpdate.setDescription(request.description());
+        boardToUpdate.setOwner(owner);
 
         var savedBoard = boardRepository.save(boardToUpdate);
 
-        return mapper.toBoardDto(savedBoard);
+        return mapper.toDto(savedBoard);
     }
 
-    public void deleteBoardById(Long id) {
-        BoardEntity entity = boardRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Board with id: " + id + " not found")
+    public void deleteBoardById(Long boardId, UserEntity user) {
+        if (user.getRole().equals(GlobalRole.ADMIN)) {
+            BoardEntity entity = boardRepository.findById(boardId).orElseThrow(() -> new
+                    EntityNotFoundException("Board with id: " + boardId + " not found"));
+            boardRepository.delete(entity);
+            return;
+        }
+
+        BoardEntity entity = boardRepository.findById(boardId).orElseThrow(
+                () -> new EntityNotFoundException("Board with id: " + boardId + " not found")
         );
+
+        boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(
+                () -> new SecurityException("You don't have permission to access this board!"
+                ));
+
         boardRepository.delete(entity);
     }
 }

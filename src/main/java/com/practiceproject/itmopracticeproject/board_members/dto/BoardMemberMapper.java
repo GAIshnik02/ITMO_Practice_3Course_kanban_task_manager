@@ -1,6 +1,5 @@
-package com.practiceproject.itmopracticeproject.board_members.domain;
+package com.practiceproject.itmopracticeproject.board_members.dto;
 
-import com.practiceproject.itmopracticeproject.board_members.api.CreateBoardMemberRequest;
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntity;
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberId;
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
@@ -12,8 +11,8 @@ import java.time.LocalDateTime;
 @Component
 public class BoardMemberMapper {
 
-    public BoardMemberDto toDto(BoardMemberEntity entity) {
-        return new BoardMemberDto(
+    public BoardMemberResponseDto toDto(BoardMemberEntity entity) {
+        return new BoardMemberResponseDto(
                 entity.getBoard().getId(),
                 entity.getUser().getId(),
                 entity.getRole(),

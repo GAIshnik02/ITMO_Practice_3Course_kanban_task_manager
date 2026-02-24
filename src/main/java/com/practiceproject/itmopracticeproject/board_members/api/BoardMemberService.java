@@ -2,10 +2,13 @@ package com.practiceproject.itmopracticeproject.board_members.api;
 
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntity;
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberRepository;
-import com.practiceproject.itmopracticeproject.board_members.domain.BoardMemberDto;
-import com.practiceproject.itmopracticeproject.board_members.domain.BoardMemberMapper;
+import com.practiceproject.itmopracticeproject.board_members.dto.BoardMemberMapper;
+import com.practiceproject.itmopracticeproject.board_members.dto.BoardMemberResponseDto;
+import com.practiceproject.itmopracticeproject.board_members.dto.CreateBoardMemberRequest;
+import com.practiceproject.itmopracticeproject.board_members.dto.Role;
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.boards.db.BoardRepository;
+import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import com.practiceproject.itmopracticeproject.user.db.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,20 +34,32 @@ public class BoardMemberService {
         this.boardRepository = boardRepository;
     }
 
-    public BoardMemberDto addMember(Long id, CreateBoardMemberRequest request) {
-        UserEntity userEntity = userRepository.findById(request.userId()).orElseThrow(
-                () -> new EntityNotFoundException("User: " + request.userId() + " not found")
-        );
-        BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Board: " + id + " not found")
-        );
-        Optional<BoardMemberEntity> boardMemberEntity = boardMemberRepository.findByBoardIdAndUserId(
-                boardEntity.getId(), userEntity.getId()
+    public BoardMemberResponseDto addMember(Long boardId, CreateBoardMemberRequest request, UserEntity user) {
+        // If adding user is in the board
+        BoardMemberEntity boardMemberEntity = checkBoardAccess(boardId, user);
+
+        if (boardMemberEntity != null) {
+            if (!(boardMemberEntity.getRole().equals(Role.OWNER) || boardMemberEntity.getRole().equals(Role.MEMBER))) {
+                throw new SecurityException("You cannot add new members to this board!");
+            }
+        }
+
+        UserEntity userToAddEntity = userRepository.findById(request.userId()).orElseThrow(
+                () -> new EntityNotFoundException("User to add with Id: " + request.userId() + " not found")
         );
 
-        var entityToSave = mapper.toEntity(boardEntity, userEntity,  request);
+        BoardEntity boardEntity = boardRepository.findById(boardId).orElseThrow(
+                () -> new EntityNotFoundException("Board: " + boardId + " not found")
+        );
 
-        if (boardMemberEntity.isPresent()) {
+        Optional<BoardMemberEntity> existingBoardMemberEntity = boardMemberRepository.findByBoardIdAndUserId(
+                boardEntity.getId(), userToAddEntity.getId()
+        );
+
+        var entityToSave = mapper.toEntity(boardEntity, userToAddEntity, request);
+        entityToSave.setRole(Role.VIEWER);
+
+        if (existingBoardMemberEntity.isPresent()) {
             entityToSave.rejoin();
         }
 
@@ -53,47 +68,132 @@ public class BoardMemberService {
         return mapper.toDto(savedEntity);
     }
 
-    public List<BoardMemberDto> getMembers(Long id) {
-        boardRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Board: " + id + " not found")
+    public List<BoardMemberResponseDto> getMembers(Long boardId, UserEntity user) {
+
+        checkBoardAccess(boardId, user);
+
+        boardRepository.findById(boardId).orElseThrow(
+                () -> new EntityNotFoundException("Board: " + boardId + " not found")
         );
 
         List<BoardMemberEntity> entities = boardMemberRepository.findAllByBoardId(
-            id
+            boardId
         );
 
         return entities.stream().map(mapper::toDto).toList();
     }
 
-    public BoardMemberDto updateMember(Long id, CreateBoardMemberRequest request) {
-        UserEntity userEntity = userRepository.findById(request.userId()).orElseThrow(
-                () -> new EntityNotFoundException("User: " + request.userId() + " not found")
-        );
-        BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Board: " + id + " not found")
-        );
+    public BoardMemberResponseDto updateMember(
+            Long boardId,
+            CreateBoardMemberRequest request,
+            UserEntity currentUser
+    ) {
 
-        var entityToUpdate = mapper.toEntity(boardEntity, userEntity, request);
+        BoardMemberEntity currentUserMember = checkBoardAccess(boardId, currentUser);
 
-        var savedEntity = boardMemberRepository.save(entityToUpdate);
+        validateUpdatePermissions(currentUserMember, request, currentUser);
+
+        boardRepository.findById(boardId)
+                       .orElseThrow(() -> new EntityNotFoundException("Board: " + boardId + " not found"));
+
+        userRepository.findById(request.userId())
+                      .orElseThrow(() -> new EntityNotFoundException("User: " + request.userId() + " not found"));
+
+        BoardMemberEntity userEntityToUpdate = boardMemberRepository
+                .findByBoardIdAndUserId(boardId, request.userId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User: " + request.userId() + " does not belong to this board!"
+                ));
+
+        if (currentUser.getId().equals(request.userId())) {
+            throw new SecurityException("You cannot update your own role!");
+        }
+
+        mapper.updateRole(userEntityToUpdate, request.role());
+        var savedEntity = boardMemberRepository.save(userEntityToUpdate);
 
         return mapper.toDto(savedEntity);
     }
 
-    public void deleteMemberFromBoardById(Long id, Long userId) {
+
+    public void deleteMemberFromBoardById(Long boardId, Long userId, UserEntity currentUser) {
+
+        BoardMemberEntity currentUserEntity = checkBoardAccess(boardId, currentUser);
+
         userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User: " + userId + " not found")
         );
-        boardRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Board: " + id + " not found")
+        boardRepository.findById(boardId).orElseThrow(
+                () -> new EntityNotFoundException("Board: " + boardId + " not found")
         );
 
         BoardMemberEntity entityToDelete = boardMemberRepository
-                .findByBoardIdAndUserId(id, userId).orElseThrow(
-                        () -> new EntityNotFoundException("Member not found for board: " + id + " and user: " + userId
+                .findByBoardIdAndUserId(boardId, userId).orElseThrow(
+                        () -> new EntityNotFoundException("Member not found for board: " + boardId + " and user: " + userId
                         ));
+
+        validateDeletePermissions(currentUserEntity, currentUser, entityToDelete);
         entityToDelete.leave();
-        mapper.markAsLeft(entityToDelete);
         boardMemberRepository.save(entityToDelete);
+    }
+
+    private BoardMemberEntity checkBoardAccess(Long boardId, UserEntity user) {
+        if (user.getRole().equals(GlobalRole.ADMIN)) {
+            return null; // Админ может всё, но не обязательно является участником
+        }
+
+        return boardMemberRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(
+                () -> new SecurityException("You are not allowed to access this board!")
+        );
+    }
+
+    private void validateUpdatePermissions(
+            BoardMemberEntity currentUserMember,
+            CreateBoardMemberRequest request,
+            UserEntity currentUser
+    ) {
+
+        if (currentUser.getRole().equals(GlobalRole.ADMIN)) {
+            return;
+        }
+
+        if (currentUserMember == null) {
+            throw new SecurityException("You cannot update members of this board!");
+        }
+
+        Role currentRole = currentUserMember.getRole();
+        Role newRole = request.role();
+
+        if (!(currentRole.equals(Role.OWNER) || currentRole.equals(Role.MEMBER))) {
+            throw new SecurityException("You cannot update members of this board!");
+        }
+
+        if (currentRole.equals(Role.MEMBER) && newRole.equals(Role.OWNER)) {
+            throw new SecurityException("Only owner can assign OWNER role!");
+        }
+    }
+
+    private void validateDeletePermissions(
+            BoardMemberEntity currentUserMember,
+            UserEntity currentUser,
+            BoardMemberEntity userToDelete
+    ) {
+        if (currentUser.getRole().equals(GlobalRole.ADMIN)) {
+            return;
+        }
+
+        if (currentUserMember == null) {
+            throw new SecurityException("You cannot delete members of this board!");
+        }
+
+        Role currentRole = currentUserMember.getRole();
+
+        if (!(currentRole.equals(Role.OWNER) || currentRole.equals(Role.MEMBER))) {
+            throw new SecurityException("You cannot delete members of this board!");
+        }
+
+        if (currentRole.equals(Role.MEMBER) && userToDelete.getRole().equals(Role.OWNER)) {
+            throw new SecurityException("You cannot delete this user!");
+        }
     }
 }

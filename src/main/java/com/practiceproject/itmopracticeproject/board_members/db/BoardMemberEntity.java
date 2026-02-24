@@ -1,6 +1,6 @@
 package com.practiceproject.itmopracticeproject.board_members.db;
 
-import com.practiceproject.itmopracticeproject.board_members.domain.Role;
+import com.practiceproject.itmopracticeproject.board_members.dto.Role;
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import jakarta.persistence.*;
@@ -26,7 +26,7 @@ public class BoardMemberEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private Role role = Role.VIEWER;
 
     @Column(name = "joined_at")
     private LocalDateTime joined_at;

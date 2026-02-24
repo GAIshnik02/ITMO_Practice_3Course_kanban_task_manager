@@ -1,6 +1,5 @@
 package com.practiceproject.itmopracticeproject.board_members.db;
 
-import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

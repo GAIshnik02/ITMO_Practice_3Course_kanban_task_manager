@@ -1,7 +1,5 @@
-package com.practiceproject.itmopracticeproject.task.domain;
+package com.practiceproject.itmopracticeproject.task.dto;
 
-import com.practiceproject.itmopracticeproject.task.TaskPriority;
-import com.practiceproject.itmopracticeproject.task.TaskStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 

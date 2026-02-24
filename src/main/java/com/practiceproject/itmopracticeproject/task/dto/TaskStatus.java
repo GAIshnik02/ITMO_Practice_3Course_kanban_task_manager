@@ -1,4 +1,4 @@
-package com.practiceproject.itmopracticeproject.task;
+package com.practiceproject.itmopracticeproject.task.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

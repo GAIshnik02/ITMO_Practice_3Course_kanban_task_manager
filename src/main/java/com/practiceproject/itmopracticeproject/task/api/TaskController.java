@@ -1,9 +1,9 @@
 package com.practiceproject.itmopracticeproject.task.api;
 
-import com.practiceproject.itmopracticeproject.task.TaskStatus;
-import com.practiceproject.itmopracticeproject.task.domain.TaskCreateRequestDto;
-import com.practiceproject.itmopracticeproject.task.domain.TaskResponseDto;
-import com.practiceproject.itmopracticeproject.task.domain.TaskUpdateRequestDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskStatus;
+import com.practiceproject.itmopracticeproject.task.dto.TaskCreateRequestDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskResponseDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.practiceproject.itmopracticeproject.board_members.domain;
+package com.practiceproject.itmopracticeproject.board_members.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

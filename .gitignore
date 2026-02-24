@@ -45,3 +45,4 @@ gradlew.bat
 
 build.gradle
 /gradle/wrapper/gradle-wrapper.properties
+qodana.yaml

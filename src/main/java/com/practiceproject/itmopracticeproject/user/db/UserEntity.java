@@ -1,8 +1,15 @@
 package com.practiceproject.itmopracticeproject.user.db;
 
+import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntity;
+import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
+import com.practiceproject.itmopracticeproject.task.db.TaskEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Table(name = "users")
 @Entity
@@ -32,6 +39,18 @@ public class UserEntity {
     @Column(name = "role", nullable = false)
     private GlobalRole role = GlobalRole.USER;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardEntity> ownedBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade =  CascadeType.ALL, orphanRemoval = true)
+    private List<BoardMemberEntity> memberships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskEntity> createdTasks = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "assignees")
+    private Set<TaskEntity> assignedTasks = new HashSet<>();
+
     @Column(name = "created_at")
     private LocalDateTime created_at;
 
@@ -51,6 +70,15 @@ public class UserEntity {
 
     public UserEntity() {
     }
+
+    @PreRemove
+    public void preRemove() {
+        for (TaskEntity task : assignedTasks) {
+            task.getAssignees().remove(this);
+        }
+        assignedTasks.clear();
+    }
+
 
     public UserEntity(Long id,
                       String login,
@@ -123,5 +151,37 @@ public class UserEntity {
 
     public LocalDateTime getUpdated_at() {
         return updated_at;
+    }
+
+    public List<BoardEntity> getOwnedBoards() {
+        return ownedBoards;
+    }
+
+    public void setOwnedBoards(List<BoardEntity> ownedBoards) {
+        this.ownedBoards = ownedBoards;
+    }
+
+    public List<BoardMemberEntity> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<BoardMemberEntity> memberships) {
+        this.memberships = memberships;
+    }
+
+    public List<TaskEntity> getCreatedTasks() {
+        return createdTasks;
+    }
+
+    public void setCreatedTasks(List<TaskEntity> createdTasks) {
+        this.createdTasks = createdTasks;
+    }
+
+    public Set<TaskEntity> getAssignedTasks() {
+        return assignedTasks;
+    }
+
+    public void setAssignedTasks(Set<TaskEntity> assignedTasks) {
+        this.assignedTasks = assignedTasks;
     }
 }

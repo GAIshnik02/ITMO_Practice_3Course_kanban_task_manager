@@ -1,8 +1,8 @@
 package com.practiceproject.itmopracticeproject.task.db;
 
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
-import com.practiceproject.itmopracticeproject.task.TaskPriority;
-import com.practiceproject.itmopracticeproject.task.TaskStatus;
+import com.practiceproject.itmopracticeproject.task.dto.TaskPriority;
+import com.practiceproject.itmopracticeproject.task.dto.TaskStatus;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;

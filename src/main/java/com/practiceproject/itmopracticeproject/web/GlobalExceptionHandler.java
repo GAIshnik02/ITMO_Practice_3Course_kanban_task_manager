@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex){
+    public ResponseEntity<?> handleGenericException(Exception ex){
         var errorDto = new ErrorResponseDto(
                 "Internal server error",
                 ex.getMessage(),
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleEntityNotFoundException(EntityNotFoundException ex){
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex){
         var errorDto = new ErrorResponseDto(
                 "Entity not found",
                 ex.getMessage(),
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
             IllegalStateException.class,
             MethodArgumentNotValidException.class
     })
-    public ResponseEntity<ErrorResponseDto> handleBadRequest(
+    public ResponseEntity<?> handleBadRequest(
             Exception e
     ) {
         var errorDto = new ErrorResponseDto(
@@ -50,6 +50,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(errorDto);
+    }
+
+    @ExceptionHandler(exception = SecurityException.class)
+    public ResponseEntity<?> handleSecurityException(SecurityException ex){
+        var errorDto = new ErrorResponseDto(
+                "You don't have permission to access this resource",
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorDto);
     }
 }

@@ -26,7 +26,6 @@ public class UserController {
         this.userService = userService;
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<?> getUserById(
             @CurrentUser UserEntity currentUser) {

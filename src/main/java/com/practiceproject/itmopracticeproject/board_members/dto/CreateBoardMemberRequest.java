@@ -1,6 +1,5 @@
-package com.practiceproject.itmopracticeproject.board_members.api;
+package com.practiceproject.itmopracticeproject.board_members.dto;
 
-import com.practiceproject.itmopracticeproject.board_members.domain.Role;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateBoardMemberRequest(

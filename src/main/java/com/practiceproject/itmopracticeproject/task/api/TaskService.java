@@ -2,12 +2,12 @@ package com.practiceproject.itmopracticeproject.task.api;
 
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.boards.db.BoardRepository;
-import com.practiceproject.itmopracticeproject.task.TaskStatus;
+import com.practiceproject.itmopracticeproject.task.dto.TaskStatus;
 import com.practiceproject.itmopracticeproject.task.db.TaskEntity;
 import com.practiceproject.itmopracticeproject.task.db.TaskRepository;
-import com.practiceproject.itmopracticeproject.task.domain.TaskCreateRequestDto;
-import com.practiceproject.itmopracticeproject.task.domain.TaskResponseDto;
-import com.practiceproject.itmopracticeproject.task.domain.TaskUpdateRequestDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskCreateRequestDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskResponseDto;
+import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import com.practiceproject.itmopracticeproject.user.db.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,6 +1,5 @@
 package com.practiceproject.itmopracticeproject.user.api;
 
-import com.practiceproject.itmopracticeproject.board_members.domain.Role;
 import com.practiceproject.itmopracticeproject.security.CurrentUser;
 import com.practiceproject.itmopracticeproject.user.db.GlobalRole;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;

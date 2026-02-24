@@ -158,7 +158,7 @@ public class BoardMemberService {
         }
 
         if (currentUserMember == null) {
-            throw new SecurityException("You cannot update members of this board!");
+            throw new SecurityException("You are not allowed to access this board!");
         }
 
         Role currentRole = currentUserMember.getRole();

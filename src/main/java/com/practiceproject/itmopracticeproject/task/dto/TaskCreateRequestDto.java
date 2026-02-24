@@ -20,9 +20,6 @@ public record TaskCreateRequestDto(
         @NotNull
         Integer position,
 
-        @NotNull
-        Long creatorId,
-
         List<Long> assigneeIds
 ) {
 }

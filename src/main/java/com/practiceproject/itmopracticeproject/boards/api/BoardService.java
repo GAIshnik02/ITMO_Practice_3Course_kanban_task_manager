@@ -1,6 +1,7 @@
 package com.practiceproject.itmopracticeproject.boards.api;
 
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberEntity;
+import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberId;
 import com.practiceproject.itmopracticeproject.board_members.db.BoardMemberRepository;
 import com.practiceproject.itmopracticeproject.board_members.dto.Role;
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
@@ -48,8 +49,11 @@ public class BoardService {
 
         var savedBoard = boardRepository.save(boardToCreate);
 
+        BoardMemberId memberId = new BoardMemberId(savedBoard.getId(), owner.getId());
+
         // добавляем юзера в участники доски при создании
         var boardMemberEntity = new BoardMemberEntity();
+        boardMemberEntity.setId(memberId);
         boardMemberEntity.setBoard(savedBoard);
         boardMemberEntity.setUser(owner);
         boardMemberEntity.setRole(Role.OWNER);

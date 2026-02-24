@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/boards/{board_id}/tasks")
-public class TaskController {
+@RequestMapping("/api/admin/boards/{board_id}/tasks")
+public class AdminTaskController {
 
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
+    public AdminTaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
@@ -35,7 +35,7 @@ public class TaskController {
     @GetMapping("/{task_id}")
     public ResponseEntity<?> getTask(
             @PathVariable("board_id") Long board_id,
-            @PathVariable("task_id")  Long task_id,
+            @PathVariable("task_id") Long task_id,
             @CurrentUser UserEntity user
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(taskService.getTask(board_id, task_id, user));
@@ -84,7 +84,7 @@ public class TaskController {
 
     @PatchMapping("/{taskId}/assignees")
     public ResponseEntity<?> updateAssignees(
-            @PathVariable("board_Id")  Long boardId,
+            @PathVariable("boardId")  Long boardId,
             @PathVariable("taskId") Long taskId,
             @RequestBody List<Long> assigneeIds,
             @CurrentUser UserEntity user

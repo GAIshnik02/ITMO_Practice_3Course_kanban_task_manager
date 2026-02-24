@@ -1,10 +1,7 @@
-package com.practiceproject.itmopracticeproject.task.api;
+package com.practiceproject.itmopracticeproject.task.dto;
 
 import com.practiceproject.itmopracticeproject.boards.db.BoardEntity;
 import com.practiceproject.itmopracticeproject.task.db.TaskEntity;
-import com.practiceproject.itmopracticeproject.task.dto.TaskCreateRequestDto;
-import com.practiceproject.itmopracticeproject.task.dto.TaskResponseDto;
-import com.practiceproject.itmopracticeproject.task.dto.TaskUpdateRequestDto;
 import com.practiceproject.itmopracticeproject.user.db.UserEntity;
 import org.springframework.stereotype.Component;
 

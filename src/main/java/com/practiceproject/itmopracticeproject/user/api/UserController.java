@@ -58,4 +58,13 @@ public class UserController {
         userService.changePassword(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    @GetMapping("/{user_login}")
+    public ResponseEntity<?> getUserByLogin(
+            @CurrentUser UserEntity currentUser,
+            @PathVariable("user_login") String userLogin
+    ) {
+        UserResponseDto response = userService.findByLogin(userLogin);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

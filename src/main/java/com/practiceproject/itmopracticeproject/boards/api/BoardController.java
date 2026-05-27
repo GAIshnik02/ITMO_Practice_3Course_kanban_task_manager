@@ -53,4 +53,11 @@ public class BoardController {
         service.deleteBoardById(id, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping
+    public ResponseEntity<?> getBoards(
+            @CurrentUser UserEntity user
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.getAllBoardsForUser(user));
+    }
 }

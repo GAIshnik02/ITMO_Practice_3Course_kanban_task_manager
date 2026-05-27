@@ -76,4 +76,13 @@ public class UserService {
         }
         user.setPass_hash(passwordEncoder.encode(request.newPassword()));
     }
+
+    public UserResponseDto findByLogin(String userLogin) {
+
+        UserEntity user = userRepository.findByLogin(userLogin).orElseThrow(
+                () -> new EntityNotFoundException("User with login: " + userLogin + " not found")
+        );
+
+        return userMapper.toDto(user);
+    }
 }

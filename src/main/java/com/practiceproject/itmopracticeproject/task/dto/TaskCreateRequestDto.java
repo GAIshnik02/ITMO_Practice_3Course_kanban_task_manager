@@ -9,6 +9,6 @@ public record TaskCreateRequestDto(
         String description,
         @NotNull TaskStatus status,
         @NotNull TaskPriority priority,
-        @NotNull Integer position,
+        Integer position,
         List<Long> assigneeIds
 ) {}

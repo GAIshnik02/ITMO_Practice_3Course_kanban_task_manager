@@ -16,6 +16,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @Transactional
 public class BoardService {
@@ -140,5 +143,16 @@ public class BoardService {
                 ));
 
         boardRepository.delete(entity);
+    }
+
+    public List<BoardResponseDto> getAllBoardsForUser(UserEntity user) {
+
+        List<BoardEntity> entities;
+
+        entities = boardRepository.findAllAccessibleBoardsByUserId(user.getId());
+
+        return entities.stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 }
